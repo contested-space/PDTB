@@ -1,0 +1,121 @@
+\documentclass{article}
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tipa}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\setlength\parindent{0in}
+\setlength\topmargin{-0.25in}
+\setlength\headheight{0in}
+\setlength\headsep{0in}
+\setlength\topskip{0.5in}
+\setlength\textheight{9.75in}
+\setlength\textwidth{6.50in}
+\setlength\oddsidemargin{0in}
+\setlength\evensidemargin{0in}
+
+\begin{document}
+\section{Rythme changeant}
+L'idée ici est de trouver une formule pour calculer la longueur de la structure
+suivante :
+
+$L_a seq(1) L_a seq(2) ... L_a seq(n) L_a seq(n-1) ... L_a seq(2)$
+
+Où $L_a$ est une structure melodique statique de a notes et $seq(k)$ est une 
+structure melodique de n notes dont seulement les k premières sont jouées.
+
+L'intéret de cette structure est de générer une forme mélodique qui contient
+des éléments toujours reconnaissables qui s'éloignent et se rapprochent
+continuellement. 
+
+On sait que pour une séquence complète de taille n, $L_a$ sera joué $2(n-1)$ fois.
+Le nombre total de notes généré par les itérations de $L_a$ sera donc $2a(n-1)$.
+
+La quantité de notes générée par seq est définie par 
+$\sum\limits_{i=1}^n i + \sum\limits_{i=2}^{n-1} i = n + 2\sum\limits_{i=1}^{n-1} i - 1$.
+Comme l'identitée $\sum\limits_{i=1}^n i = \frac{n(n+1)}{2}$ est connue, nous
+obtenons la quantité $2a(n-1) + n + 2\sum\limits_{i=1}^{n-1} i - 1= n^2 +2an - 2a - 1$.
+
+Maintenant que cette quantité est connue, il  nous est possible (en supposant 
+que toutes les notes ont une durée égales) de trouver ses diviseurs, de manière
+à y superposer une ou plusieurs voix tout en gardant une cohérence rythmique.
+
+Il nous est maintenant possible de tester la divisibilité de la structure pour
+un certain entier b en posant $n^2 + 2an - 2a - 1 = bk$ (b et k entiers). 
+
+Par exemple, si on souhaite utiliser cette structure avec $n=5$ et $a=3$, la
+quantité totale de notes est $(5)^2 + 2(3)(5) - 2(3) - 1 = 48$, ce qui permet
+d'y superposer des boucles de 2, 3, 4, 6, 12, 16 et 24 temps. 
+
+On pourrait aussi espérer trouver une façon de superposer cette structure à 
+elle-même, avec des paramètres différents. Il nous suffit de trouver
+$a_0, a_1, n_0, n_1$ tels que 
+$k_0(n_0^2 + 2 a_0 n_0 - 2 a_0 - 1) = k_1(n_1^2 + 2 a_1 n_1 - 2 a_1 - 1)$. À
+première vue, une équation quadratique au second degré avec 6 variables peut 
+sembler peu pratique. Il est en fait possible que cette équation soit un
+problème de la classe \texttt{NP-hard}. Cependant, comme les résultats qui
+nous intéressent sont dans les entiers relativement bas (par exemple, pour
+accomplir une superposition de boucles d'une minute, il nous faut seulement les
+résultats dont le total est de 60), il nous est possible d'en obtenir les 
+combinaisons possibles par force brute. Il est trivial d'écrire un programme
+qui génère toutes les combinaisons possibles jusqu'à un certain point.
+Par exemple:
+
+\begin{lstlisting}
+for(k0 = 1; k0 <= ; k0++)
+  for(k1 = 1; k1<= Nk1; k1++)
+    for(a0 = 1; a0<=Na0; a0++)
+      for(a1 = 1; a1<=Na1; a1++)
+      	for(n0 = 1; n0<=Nn0; n0++)
+      	  for(n1 = 1; n1<=Nn1; n1++)
+       	  	if(k0*(n0*n0 + 2*n0*a0 - 2*a0 - 1) 
+       	  		== k1*(n1*n1 + 2*n1*a1 - 2*a1 - 1) 
+       	        && !(a0 == a1 && n0 == n1) && !(n0 == 1 && n1 == 1))
+          	  printf("k0 = %d, k1 = %d, a0 = %d, a1 = %d, n0 = %d, 
+          	  	      n1 = %d, total0 = %d, total1 = %d \n",
+          	         k0, k1, a0, a1, n0, n1, 
+          	         n0*n0 + 2*n0*a0 - 2*a0 - 1, 
+          	         n1*n1 + 2*n1*a1 - 2*a1 - 1);
+
+\end{lstlisting}
+\subsection{Quelques combinaisons possibles}
+\begin{lstlisting}
+k0 = 1, k1 = 1, a0 = 1, a1 = 4, n0 = 9, n1 = 7, total0 = 96, total1 = 96
+k0 = 1, k1 = 1, a0 = 1, a1 = 5, n0 = 6, n1 = 4, total0 = 45, total1 = 45
+k0 = 1, k1 = 1, a0 = 1, a1 = 6, n0 = 5, n1 = 3, total0 = 32, total1 = 32
+k0 = 1, k1 = 1, a0 = 1, a1 = 9, n0 = 4, n1 = 2, total0 = 21, total1 = 21
+k0 = 1, k1 = 1, a0 = 1, a1 = 9, n0 = 9, n1 = 5, total0 = 96, total1 = 96
+k0 = 1, k1 = 1, a0 = 2, a1 = 6, n0 = 7, n1 = 5, total0 = 72, total1 = 72
+k0 = 1, k1 = 1, a0 = 2, a1 = 8, n0 = 5, n1 = 3, total0 = 40, total1 = 40
+k0 = 1, k1 = 1, a0 = 2, a1 = 10, n0 = 10, n1 = 6, total0 = 135, total1 = 135
+k0 = 1, k1 = 1, a0 = 3, a1 = 7, n0 = 8, n1 = 6, total0 = 105, total1 = 105
+k0 = 1, k1 = 1, a0 = 3, a1 = 10, n0 = 5, n1 = 3, total0 = 48, total1 = 48
+k0 = 1, k1 = 1, a0 = 4, a1 = 1, n0 = 7, n1 = 9, total0 = 96, total1 = 96
+k0 = 1, k1 = 1, a0 = 4, a1 = 8, n0 = 9, n1 = 7, total0 = 144, total1 = 144
+k0 = 1, k1 = 1, a0 = 4, a1 = 9, n0 = 7, n1 = 5, total0 = 96, total1 = 96
+k0 = 1, k1 = 1, a0 = 4, a1 = 10, n0 = 6, n1 = 4, total0 = 75, total1 = 75
+k0 = 1, k1 = 1, a0 = 5, a1 = 1, n0 = 4, n1 = 6, total0 = 45, total1 = 45
+k0 = 1, k1 = 1, a0 = 5, a1 = 9, n0 = 10, n1 = 8, total0 = 189, total1 = 189
+k0 = 1, k1 = 1, a0 = 6, a1 = 1, n0 = 3, n1 = 5, total0 = 32, total1 = 32
+k0 = 1, k1 = 1, a0 = 6, a1 = 2, n0 = 5, n1 = 7, total0 = 72, total1 = 72
+k0 = 1, k1 = 1, a0 = 7, a1 = 3, n0 = 6, n1 = 8, total0 = 105, total1 = 105
+k0 = 1, k1 = 1, a0 = 8, a1 = 2, n0 = 3, n1 = 5, total0 = 40, total1 = 40
+k0 = 1, k1 = 1, a0 = 8, a1 = 4, n0 = 7, n1 = 9, total0 = 144, total1 = 144
+k0 = 1, k1 = 1, a0 = 9, a1 = 1, n0 = 2, n1 = 4, total0 = 21, total1 = 21
+k0 = 1, k1 = 1, a0 = 9, a1 = 1, n0 = 5, n1 = 9, total0 = 96, total1 = 96
+k0 = 1, k1 = 1, a0 = 9, a1 = 4, n0 = 5, n1 = 7, total0 = 96, total1 = 96
+k0 = 1, k1 = 1, a0 = 9, a1 = 5, n0 = 8, n1 = 10, total0 = 189, total1 = 189
+k0 = 1, k1 = 1, a0 = 10, a1 = 2, n0 = 6, n1 = 10, total0 = 135, total1 = 135
+k0 = 1, k1 = 1, a0 = 10, a1 = 3, n0 = 3, n1 = 5, total0 = 48, total1 = 48
+k0 = 1, k1 = 1, a0 = 10, a1 = 4, n0 = 4, n1 = 6, total0 = 75, total1 = 75
+\end{lstlisting} 
+
+
+
+
+
+
+\end{document}
